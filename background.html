@@ -1,16 +1,30 @@
 <script>
 
-var clearing = false;
+var clearing = false,
+    currentFrame = 0,
+    frameCount = 6,
+    intervalId,
+    intervalMillis = 100;
+
+function displayNextLoadingFrame() {
+    chrome.browserAction.setIcon({ path: 'icons/loading/frame' + currentFrame + '.png' });
+
+    if (++currentFrame > frameCount - 1) {
+        currentFrame = 0;
+    }
+}
 
 chrome.browserAction.onClicked.addListener(function(tab) {
     if (!clearing) {
         clearing = true;
 
-        chrome.browserAction.setIcon({ path: 'loading.gif' });
+        intervalId = setInterval(displayNextLoadingFrame, intervalMillis);
+        displayNextLoadingFrame(); // in case the cache is cleared within the intervalMillis
 
         chrome.experimental.clear.cache('everything', function() {
-            chrome.browserAction.setIcon({ path: 'icon.png' });
+            clearInterval(intervalId);
             clearing = false;
+            chrome.browserAction.setIcon({ path: 'icons/icon.png' });
         });
     }
 });
