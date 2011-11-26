@@ -1,0 +1,18 @@
+<script>
+
+var clearing = false;
+
+chrome.browserAction.onClicked.addListener(function(tab) {
+    if (!clearing) {
+        clearing = true;
+
+        chrome.browserAction.setIcon({ path: 'loading.gif' });
+
+        chrome.experimental.clear.cache('everything', function() {
+            chrome.browserAction.setIcon({ path: 'icon.png' });
+            clearing = false;
+        });
+    }
+});
+
+</script>
